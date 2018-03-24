@@ -1,4 +1,5 @@
 
+#include "trie.h"
 #include <io.h>    
 #include <fstream>    
 #include <string>
@@ -6,6 +7,9 @@
 #include <iostream> 
 
 #define MAX_PATH 100
+
+long charNum = 0;
+long lineNum = 0;
 
 using namespace std;
 
@@ -70,9 +74,10 @@ void GetAllFormatFiles(string path, vector<string>& files, string format)
 	}
 }
 
-// 该函数有两个参数，第一个为路径字符串(string类型，最好为绝对路径)；    
-// 第二个参数为文件夹与文件名称存储变量(vector类型,引用传递)。    
-// 在主函数中调用格式(并将结果保存在文件"AllFiles.txt"中，第一行为总数)：    
+bool isWord(string word)
+{
+
+}
 
 int main(int argc , char** argv)
 {
@@ -85,7 +90,7 @@ int main(int argc , char** argv)
 
 	//读取所有格式为jpg的文件    
 	string format = ".bmp";
-	GetAllFormatFiles(filePath, files, ".cpp");
+	GetAllFormatFiles(filePath, files, ".py");
 	ofstream ofn(distAll);
 
 	int size = files.size();
@@ -97,17 +102,32 @@ int main(int argc , char** argv)
 	}
 	ofn.close();
 
-	string data;
+	string data,word_A,word_B;
 	ifstream file_test;
+	Trie wordsDic;
+
 	file_test.open(files[0],ios::in);
-	
-	while (getline(file_test,data))
+
+
+	char ch;
+	bool wordFlag = false;
+	while (file_test.get(ch))
 	{
 		//file_test.getline(str,80);
-		cout << data << endl;
+		cout << ch ;
+		charNum++;
+
 	}
 	
+
+
 	file_test.close();
 
+	system("pause");
 	return 0;
 }
+
+
+
+
+

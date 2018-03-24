@@ -18,5 +18,13 @@
     <ClCompile Include="hw1_PB16001775.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="trie.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="trie.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
