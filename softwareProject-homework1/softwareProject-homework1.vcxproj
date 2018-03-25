@@ -116,10 +116,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="hw1_PB16001775.cpp" />
-    <ClCompile Include="trie.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="trie.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
