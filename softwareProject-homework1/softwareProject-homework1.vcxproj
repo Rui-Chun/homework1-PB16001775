@@ -117,6 +117,9 @@
   <ItemGroup>
     <ClCompile Include="hw1_PB16001775.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="result我的.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

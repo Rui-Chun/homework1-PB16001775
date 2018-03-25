@@ -17,13 +17,13 @@ typedef struct
 {
 	string value;
 	int appearNum = 0;
-}wordInfo;
+}wordInfo;//描述词的带后缀值和出现次数
 typedef struct
 {
 	string Aword;
 	string Bword;
 	int appearNum = 0;
-}phraselink;
+}phraselink;//描述A词和B词的词组关系
 
 struct HashFunc
 {
@@ -276,10 +276,10 @@ int main(int argc, char** argv)
 
 	for (int i = 0; i < size; i++)
 	{
-		//suffix = files[i].substr(files[i].find_last_of('.') + 1);
-		//auto itstr = find(mysuffix.begin(), mysuffix.end(), suffix);
-		//if (itstr == mysuffix.end())
-		//	continue;
+		/*suffix = files[i].substr(files[i].find_last_of('.') + 1);
+		auto itstr = find(mysuffix.begin(), mysuffix.end(), suffix);
+		if (itstr == mysuffix.end())
+			continue;*/
 
 		file_test.open(files[i], ios::in);
 		if (file_test.get(ch))
@@ -289,10 +289,10 @@ int main(int argc, char** argv)
 		//判断是否空文件
 		do
 		{
-			charNum++;
+			if(ch>=32&&ch<127||(ch>=9&&ch<=10))
+				charNum++;
 			//cout << ch;
 			//换行符看成一行
-
 			if (ch >= 'A'&&ch <= 'Z')
 			{
 				word_B.push_back(ch + 32);
