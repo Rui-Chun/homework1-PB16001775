@@ -1,4 +1,5 @@
-#include <io.h>    
+#include <io.h> 
+#include <stdio.h>
 #include <cctype>
 #include <algorithm>
 #include <fstream>    
@@ -256,7 +257,7 @@ string tolower(string & str)
 }//相比较库函数改进有限
 int main(int argc, char** argv)
 {
-	string filePath = "C:\\Users\\马睿淳\\Desktop\\测试集与参考结果\\newsample";
+	string filePath = "C:\\Users\\马睿淳\\Desktop\\我的测试";
 	vector<string> files;
 	vector<string> mysuffix = { "txt","h","cpp","c","hpp","html","css","js","py" };
 	string suffix;
@@ -271,7 +272,8 @@ int main(int argc, char** argv)
 	ifstream file_test;
 
 	char ch;
-
+	size_t sz;
+	FILE*fp;
 
 
 	for (int i = 0; i < size; i++)
@@ -281,15 +283,24 @@ int main(int argc, char** argv)
 		if (itstr == mysuffix.end())
 			continue;*/
 
-		file_test.open(files[i], ios::in);
-		if (file_test.get(ch))
+		//file_test.open(files[i], ios::in);
+		fp = fopen(files[i].c_str(), "rb");
+		fseek(fp, 0L, SEEK_END);
+		sz = ftell(fp);
+		rewind(fp);
+		char*buf;
+		buf = new char[sz];
+		int len = fread(buf, sizeof(char), sz, fp);
+		if (len) {
 			lineNum++;
+		}
 		else
 			continue;
-		//判断是否空文件
-		do
+
+		for (int i = 0; i < len; i++)
 		{
-			if(ch>=32&&ch<127||(ch>=9&&ch<=10))
+			ch = buf[i];
+			if (ch >= 32 && ch < 127 || (ch >= 9 && ch <= 10))
 				charNum++;
 			//cout << ch;
 			//换行符看成一行
@@ -321,20 +332,11 @@ int main(int argc, char** argv)
 				word_Breal.clear();
 			}
 
-		} while (file_test.get(ch));
-		//最后读到EOF还有一个单词未处理
-		//transform(word_B.begin(), word_B.end(), word_B.begin(), ::tolower);
-
-		if (isWord(word_B))
-		{
-			addWord(word_B, word_A, word_Breal, word_Areal);
-			word_A = word_B;
-			wordNum++;
 		}
-		word_B.clear();
-
-		file_test.close();
-		file_test.clear();
+		delete []buf;
+		fclose(fp);
+	/*	file_test.close();
+		file_test.clear();*/
 	}
 
 
