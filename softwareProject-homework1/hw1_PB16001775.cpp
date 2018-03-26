@@ -26,27 +26,7 @@ typedef struct
 	int appearNum = 0;
 }phraselink;//描述A词和B词的词组关系
 
-struct HashFunc
-{
-	std::size_t operator()(const phraselink &key) const
-	{
-		using std::size_t;
-		using std::hash;
-
-		return (hash<string>()(key.Aword) ^ (hash<string>()(key.Bword) << 1));
-	}
-};
-struct EqualKey
-{
-	bool operator () (const phraselink &lhs, const phraselink &rhs) const
-	{
-		return lhs.Aword == rhs.Aword
-			&& lhs.Bword == rhs.Bword;
-	}
-};
-
 typedef unordered_map<string, wordInfo> wMap;
-typedef unordered_map<phraselink, int, HashFunc, EqualKey>  pMap;
 typedef unordered_map<string, phraselink> npMap;
 
 long charNum = 0;
@@ -256,20 +236,23 @@ string tolower(string & str)
 	return str;
 }//相比较库函数改进有限
 int main(int argc, char** argv)
-{
-	string filePath = "C:\\Users\\马睿淳\\Desktop\\我的测试";
+{	
+	string filePath = "C:\\Users\\马睿淳\\Desktop\\测试集与参考结果\\newsample";
 	vector<string> files;
 	vector<string> mysuffix = { "txt","h","cpp","c","hpp","html","css","js","py" };
 	string suffix;
-
-
-	//读取所有格式为jpg的文件    
-	GetAllFiles(filePath, files);
+	if (argc < 2)
+		cout << "Please input one arguemnt " << endl;
+	else
+		filePath = argv[1];
+	if (filePath.find_last_of('.') == -1)
+		GetAllFiles(filePath, files);//读取所有的文件   
+	else
+		files.push_back(filePath);
 
 
 	int size = files.size();
 	string word_Breal, word_Areal, word_A, word_B;
-	ifstream file_test;
 
 	char ch;
 	size_t sz;
@@ -284,7 +267,13 @@ int main(int argc, char** argv)
 			continue;*/
 
 		//file_test.open(files[i], ios::in);
-		fp = fopen(files[i].c_str(), "rb");
+		//fp =fopen(files[i].c_str(),"r");
+		
+		if (fopen_s(&fp,files[i].c_str(), "r")!=0)
+		{
+			cout << "can open file " << files[i] << endl;
+			continue;
+		}
 		fseek(fp, 0L, SEEK_END);
 		sz = ftell(fp);
 		rewind(fp);
@@ -300,7 +289,7 @@ int main(int argc, char** argv)
 		for (int i = 0; i < len; i++)
 		{
 			ch = buf[i];
-			if (ch >= 32 && ch < 127 || (ch >= 9 && ch <= 10))
+			if (ch >= 32 && ch <= 126)
 				charNum++;
 			//cout << ch;
 			//换行符看成一行
@@ -334,7 +323,13 @@ int main(int argc, char** argv)
 
 		}
 		delete []buf;
-		fclose(fp);
+		if (fp)
+		{
+			if (fclose(fp))
+			{
+				cout << files[i] << " is not closed " << endl;
+			}
+		}
 	/*	file_test.close();
 		file_test.clear();*/
 	}
