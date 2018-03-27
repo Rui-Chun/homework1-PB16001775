@@ -16,17 +16,24 @@ clock_t a = clock();
 
 using namespace std;
 
-typedef struct
+class wordInfo
 {
+public:
 	string value;
-	int appearNum = 0;
-}wordInfo;//描述词的带后缀值和出现次数
-typedef struct
+	int appearNum ;
+
+	wordInfo():value(""),appearNum(0)
+	{}
+};//描述词的带后缀值和出现次数
+class phraselink
 {
+public:
 	string Aword;
 	string Bword;
 	int appearNum = 0;
-}phraselink;//描述A词和B词的词组关系
+	phraselink():appearNum(0)
+	{}
+};//描述A词和B词的词组关系
 
 typedef unordered_map<string, wordInfo> wMap;
 typedef unordered_map<string, phraselink> npMap;
@@ -129,6 +136,7 @@ void addWord(string &word, string &word_pre, string &word_r, string &word_pre_r)
 		phraseKey.push_back('-');
 		phraseKey +=word;
 		phraseDic[phraseKey].appearNum++;//得到phraseKey
+		//关于大小写
 		if (phraseDic[phraseKey].Aword.empty())
 		{
 			phraseDic[phraseKey].Aword = word_pre_r; phraseDic[phraseKey].Bword = word_r;
