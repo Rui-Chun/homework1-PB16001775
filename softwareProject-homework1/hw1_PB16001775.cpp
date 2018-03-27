@@ -88,8 +88,8 @@ void addWord(string &word, string &word_pre, string &word_r, string &word_pre_r)
 			break;
 		}
 	}
-	postfix = word.substr(wordlen - pfixlen);
-	word = word.substr(0, wordlen - pfixlen);//从小写的word得到wordKey
+	postfix = word.substr(wordlen - pfixlen+1);
+	word = word.substr(0, wordlen - pfixlen+1);//从小写的word得到wordKey
 	wordsDic[word].appearNum++;
 
 	if (wordsDic[word].value.empty()|| wordsDic[word].value>word_r)
