@@ -14,6 +14,17 @@ namespace UnitTest1
 			// TODO: 在此输入测试代码
 
 		}
+		TEST_METHOD(TestMethod2)
+		{
 
+		}
+		TEST_METHOD(TestMethod3)
+		{
+
+		}
+		TEST_METHOD(TestMethod4)
+		{
+
+		}
 	};
 }

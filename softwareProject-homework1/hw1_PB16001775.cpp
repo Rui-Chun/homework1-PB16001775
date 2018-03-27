@@ -1,4 +1,5 @@
 #include <io.h> 
+#include <time.h>
 #include <stdio.h>
 #include <cctype>
 #include <algorithm>
@@ -11,6 +12,7 @@
 #define MAX_PATH 100
 #define MOSTNUM  10
 
+clock_t a = clock();
 
 using namespace std;
 
@@ -101,15 +103,15 @@ void GetAllFormatFiles(string path, vector<string>& files, string format)
 
 void addWord(string &word, string &word_pre, string &word_r, string &word_pre_r)
 {
-	int wordlen = word.length();
+	int wordlen = word.length()-1;
 	int pfixlen = 0;
 	string postfix, phraseKey;
 	wMap::iterator tempit;
-	for (int i = wordlen - 1;; i--)
+	for (int i = wordlen ;; i--)
 	{
 		if (word[i]<'0' || word[i]>'9')
 		{
-			pfixlen = wordlen - 1 - i;
+			pfixlen = wordlen  - i;
 			//获得数字后缀长度
 			break;
 		}
@@ -118,19 +120,23 @@ void addWord(string &word, string &word_pre, string &word_r, string &word_pre_r)
 	word = word.substr(0, wordlen - pfixlen);//从小写的word得到wordKey
 	wordsDic[word].appearNum++;
 
-	if (wordsDic[word].value.empty())
+	if (wordsDic[word].value.empty()|| wordsDic[word].value>word_r)
 		wordsDic[word].value = word_r;//记录真实值
-	else if (wordsDic[word].value>word_r)
-		wordsDic[word].value = word_r;
 
 	if (!word.empty() && !word_pre.empty())
 	{
 		phraseKey = word_pre;
 		phraseKey.push_back('-');
-		phraseKey = phraseKey.append(word);
+		phraseKey +=word;
 		phraseDic[phraseKey].appearNum++;//得到phraseKey
-		phraseDic[phraseKey].Aword = word_pre_r;
-		phraseDic[phraseKey].Bword = word_r;
+		if (phraseDic[phraseKey].Aword.empty())
+		{
+			phraseDic[phraseKey].Aword = word_pre_r; phraseDic[phraseKey].Bword = word_r;
+		}
+		else if (phraseDic[phraseKey].Bword > word_r)
+			phraseDic[phraseKey].Bword = word_r;
+		else if (phraseDic[phraseKey].Aword > word_pre_r)
+			phraseDic[phraseKey].Aword = word_pre_r;
 	}
 
 }
@@ -184,7 +190,6 @@ bool isWord(string word)
 			return false;
 	}
 	return true;
-
 }
 
 wordInfo* sortMwords(wordInfo* Mwords)
@@ -244,7 +249,10 @@ int main(int argc, char** argv)
 	if (argc < 2)
 		cout << "Please input one arguemnt " << endl;
 	else
+	{
 		filePath = argv[1];
+		cout << ">>>" << filePath << endl;
+	}
 	if (filePath.find_last_of('.') == -1)
 		GetAllFiles(filePath, files);//读取所有的文件   
 	else
@@ -294,9 +302,9 @@ int main(int argc, char** argv)
 			//cout << ch;
 			//换行符看成一行
 			if (ch >= 'A'&&ch <= 'Z')
-			{
-				word_B.push_back(ch + 32);
+			{	
 				word_Breal.push_back(ch);
+				word_B.push_back(ch + 32);
 			}
 			else if ((ch >= 'a'&&ch <= 'z') || (ch <= '9'&&ch >= '0'))
 			{
@@ -343,8 +351,8 @@ int main(int argc, char** argv)
 	fileout << "characters:" << charNum << endl;
 	fileout << "words:" << wordNum << endl;
 	fileout << "lines:" << lineNum << endl;
-	sortMwords(Mwords);
-	sortMphrases(Mphrases);
+	//sortMwords(Mwords);
+	//sortMphrases(Mphrases);
 	for (int i = 0; i < MOSTNUM; i++)
 	{
 		if (Mwords[i].appearNum == 0)break;
@@ -356,5 +364,9 @@ int main(int argc, char** argv)
 		fileout << "<" << Mphrases[i].Aword << "-" << Mphrases[i].Bword << ">:" << Mphrases[i].appearNum << endl;
 	}
 	fileout.close();
+
+clock_t b = clock();
+	cout << (double)(a - b) / CLOCKS_PER_SEC << "s" << endl;
+
 	return 0;
 }
