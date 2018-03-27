@@ -20,16 +20,16 @@ typedef struct
 {
 	string value;
 	int appearNum = 0;
+	int cflag = 0;
 }wordInfo;//描述词的带后缀值和出现次数
 typedef struct
 {
-	string Aword;
-	string Bword;
+	string phrase;
 	int appearNum = 0;
 }phraselink;//描述A词和B词的词组关系
 
 typedef unordered_map<string, wordInfo> wMap;
-typedef unordered_map<string, phraselink> npMap;
+typedef unordered_map<string, long> npMap;
 
 long charNum = 0;
 long lineNum = 0;
@@ -71,35 +71,6 @@ void GetAllFiles(string path, vector<string>& files)
 
 }
 
-//获取特定格式的文件名    
-void GetAllFormatFiles(string path, vector<string>& files, string format)
-{
-	//文件句柄      
-	long   hFile = 0;
-	//文件信息      
-	struct _finddata_t fileinfo;
-	string p;
-	if ((hFile = _findfirst(p.assign(path).append("\\*" + format).c_str(), &fileinfo)) != -1)
-	{
-		do
-		{
-			if ((fileinfo.attrib &  _A_SUBDIR))
-			{
-				if (strcmp(fileinfo.name, ".") != 0 && strcmp(fileinfo.name, "..") != 0)
-				{
-					//files.push_back(p.assign(path).append("\\").append(fileinfo.name) );    
-					GetAllFormatFiles(p.assign(path).append("\\").append(fileinfo.name), files, format);
-				}
-			}
-			else
-			{
-				files.push_back(p.assign(path).append("\\").append(fileinfo.name));
-			}
-		} while (_findnext(hFile, &fileinfo) == 0);
-
-		_findclose(hFile);
-	}
-}
 
 void addWord(string &word, string &word_pre, string &word_r, string &word_pre_r)
 {
@@ -116,8 +87,8 @@ void addWord(string &word, string &word_pre, string &word_r, string &word_pre_r)
 			break;
 		}
 	}
-	postfix = word.substr(wordlen - pfixlen);
-	word = word.substr(0, wordlen - pfixlen);//从小写的word得到wordKey
+	postfix = word.substr(wordlen - pfixlen+1);
+	word = word.substr(0, wordlen - pfixlen+1);//从小写的word得到wordKey
 	wordsDic[word].appearNum++;
 
 	if (wordsDic[word].value.empty()|| wordsDic[word].value>word_r)
@@ -128,15 +99,7 @@ void addWord(string &word, string &word_pre, string &word_r, string &word_pre_r)
 		phraseKey = word_pre;
 		phraseKey.push_back('-');
 		phraseKey +=word;
-		phraseDic[phraseKey].appearNum++;//得到phraseKey
-		if (phraseDic[phraseKey].Aword.empty())
-		{
-			phraseDic[phraseKey].Aword = word_pre_r; phraseDic[phraseKey].Bword = word_r;
-		}
-		else if (phraseDic[phraseKey].Bword > word_r)
-			phraseDic[phraseKey].Bword = word_r;
-		else if (phraseDic[phraseKey].Aword > word_pre_r)
-			phraseDic[phraseKey].Aword = word_pre_r;
+		phraseDic[phraseKey]++;//得到phraseKey
 	}
 
 }
@@ -152,14 +115,17 @@ bool sortWords()
 		temp = wordsDic.begin();
 		for (wMap::iterator it = wordsDic.begin(); it != wordsDic.end(); it++)
 		{
+			if (it->second.cflag == 1)
+				continue;
 			if ((it->second.appearNum > temp->second.appearNum) || (it->second.appearNum == temp->second.appearNum && it->first < temp->first))//这里应该比较key还是真值的大小
 			{
 				temp = it;
 			}
 		}
+		temp->second.cflag = 1;
 		Mwords[i] = temp->second;
-		wordsDic.erase(temp);
 	}
+
 	return true;
 }
 bool sortPhrase()
@@ -174,10 +140,11 @@ bool sortPhrase()
 		temp = phraseDic.begin();
 		for (auto it = phraseDic.begin(); it != phraseDic.end(); it++)
 		{
-			if (it->second.appearNum > temp->second.appearNum || (it->second.appearNum == temp->second.appearNum&&it->first < temp->first))
+			if (it->second > temp->second || (it->second == temp->second&&it->first < temp->first))
 				temp = it;
 		}
-		Mphrases[i] = temp->second;
+		Mphrases[i].phrase = temp->first;
+		Mphrases[i].appearNum = temp->second;
 		phraseDic.erase(temp);
 	}
 	return true;
@@ -222,7 +189,7 @@ phraselink* sortMphrases(phraselink* Mphrases)
 		for (int j = i + 1; j < MOSTNUM; j++)
 		{
 			if (Mphrases[j].appearNum == 0)break;
-			if (Mphrases[j].Aword < temp.Aword || (Mphrases[j].Aword == temp.Aword) && Mphrases[j].Bword < temp.Bword)
+			if (Mphrases[j].phrase < temp.phrase || (Mphrases[j].phrase == temp.phrase) && Mphrases[j].phrase < temp.phrase)
 			{
 				temp = Mphrases[j];
 				Mphrases[j] = Mphrases[i];
@@ -360,8 +327,11 @@ int main(int argc, char** argv)
 	}
 	for (int i = 0; i < MOSTNUM; i++)
 	{
-		if (Mphrases[i].appearNum == 0)break;
-		fileout << "<" << Mphrases[i].Aword << "-" << Mphrases[i].Bword << ">:" << Mphrases[i].appearNum << endl;
+		if (Mphrases[i].phrase == "")break;
+		int tp = Mphrases[i].phrase.find('-');
+		string aw = Mphrases[i].phrase.substr(0, tp);
+		string bw = Mphrases[i].phrase.substr(tp + 1);
+		fileout << "<" << wordsDic[aw].value << "-" << wordsDic[bw].value << ">:" << Mphrases[i].appearNum << endl;
 	}
 	fileout.close();
 
