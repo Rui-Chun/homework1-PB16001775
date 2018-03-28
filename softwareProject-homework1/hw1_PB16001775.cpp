@@ -297,6 +297,18 @@ int main(int argc, char** argv)
 			}
 
 		}
+
+		//word_B = tolower(word_B);
+		if (isWord(word_B))
+		{
+			wordNum++;
+			addWord(word_B, word_A, word_Breal, word_Areal);
+			word_A = word_B;
+			word_Areal = word_Breal;
+		}
+		word_B.clear();
+		word_Breal.clear();
+
 		delete []buf;
 		if (fp)
 		{
