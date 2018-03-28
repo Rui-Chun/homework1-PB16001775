@@ -75,31 +75,31 @@ void GetAllFiles(string path, vector<string>& files)
 
 void addWord(string &word, string &word_pre, string &word_r, string &word_pre_r)
 {
-	int wordlen = word.length()-1;
+	int wordlen = word.length() - 1;
 	int pfixlen = 0;
 	string postfix, phraseKey;
 	wMap::iterator tempit;
-	for (int i = wordlen ;; i--)
+	for (int i = wordlen;; i--)
 	{
 		if (word[i]<'0' || word[i]>'9')
 		{
-			pfixlen = wordlen  - i;
+			pfixlen = wordlen - i;
 			//获得数字后缀长度
 			break;
 		}
 	}
-	postfix = word.substr(wordlen - pfixlen+1);
-	word = word.substr(0, wordlen - pfixlen+1);//从小写的word得到wordKey
+	postfix = word.substr(wordlen - pfixlen + 1);
+	word = word.substr(0, wordlen - pfixlen + 1);//从小写的word得到wordKey
 	wordsDic[word].appearNum++;
 
-	if (wordsDic[word].value.empty()|| wordsDic[word].value>word_r)
+	if (wordsDic[word].value.empty() || wordsDic[word].value>word_r)
 		wordsDic[word].value = word_r;//记录真实值
 
 	if (!word.empty() && !word_pre.empty())
 	{
 		phraseKey = word_pre;
 		phraseKey.push_back('-');
-		phraseKey +=word;
+		phraseKey += word;
 		phraseDic[phraseKey].appearNum++;//得到phraseKey
 		if (phraseDic[phraseKey].Aword.empty())
 		{
@@ -213,10 +213,9 @@ string tolower(string & str)
 	return str;
 }//相比较库函数改进有限
 int main(int argc, char** argv)
-{	
+{
 	string filePath = "C:\\Users\\马睿淳\\Desktop\\测试集与参考结果\\newsample";
 	vector<string> files;
-	vector<string> mysuffix = { "txt","h","cpp","c","hpp","html","css","js","py" };
 	string suffix;
 	if (argc < 2)
 		cout << "Please input one arguemnt " << endl;
@@ -244,12 +243,12 @@ int main(int argc, char** argv)
 		/*suffix = files[i].substr(files[i].find_last_of('.') + 1);
 		auto itstr = find(mysuffix.begin(), mysuffix.end(), suffix);
 		if (itstr == mysuffix.end())
-			continue;*/
+		continue;*/
 
 		//file_test.open(files[i], ios::in);
 		//fp =fopen(files[i].c_str(),"r");
-		
-		if (fopen_s(&fp,files[i].c_str(), "r")!=0)
+
+		if (fopen_s(&fp, files[i].c_str(), "r") != 0)
 		{
 			cout << "can open file " << files[i] << endl;
 			continue;
@@ -274,7 +273,7 @@ int main(int argc, char** argv)
 			//cout << ch;
 			//换行符看成一行
 			if (ch >= 'A'&&ch <= 'Z')
-			{	
+			{
 				word_Breal.push_back(ch);
 				word_B.push_back(ch + 32);
 			}
@@ -302,7 +301,18 @@ int main(int argc, char** argv)
 			}
 
 		}
-		delete []buf;
+
+		if (isWord(word_B))
+		{
+			wordNum++;
+			addWord(word_B, word_A, word_Breal, word_Areal);
+			word_A = word_B;
+			word_Areal = word_Breal;
+		}
+		word_B.clear();
+		word_Breal.clear();
+
+		delete[]buf;
 		if (fp)
 		{
 			if (fclose(fp))
@@ -310,7 +320,7 @@ int main(int argc, char** argv)
 				cout << files[i] << " is not closed " << endl;
 			}
 		}
-	/*	file_test.close();
+		/*	file_test.close();
 		file_test.clear();*/
 	}
 
@@ -319,7 +329,7 @@ int main(int argc, char** argv)
 	sortPhrase();
 
 	//输出文件
-	ofstream fileout("result我的.txt");
+	ofstream fileout("result.txt");
 	fileout << "characters:" << charNum << endl;
 	fileout << "words:" << wordNum << endl;
 	fileout << "lines:" << lineNum << endl;
@@ -337,7 +347,7 @@ int main(int argc, char** argv)
 	}
 	fileout.close();
 
-clock_t b = clock();
+	clock_t b = clock();
 	cout << (double)(a - b) / CLOCKS_PER_SEC << "s" << endl;
 
 	return 0;

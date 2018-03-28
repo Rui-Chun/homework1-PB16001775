@@ -1,0 +1,11 @@
+characters:50
+words:10
+lines:10
+<that>:7
+<qweqwe>:1
+<ssssss>:1
+<tttttt>:1
+<that-that>:6
+<qweqwe-that233>:1
+<that-tttttt>:1
+<tttttt-ssssss>:1

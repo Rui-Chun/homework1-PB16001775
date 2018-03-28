@@ -68,7 +68,38 @@ void GetAllFiles(string path, vector<string>& files)
 
 
 
-void addWord(string &word, string &word_pre, string &word_r, string &word_pre_r)
+wMap addWord(string &word, string &word_pre, string &word_r, string &word_pre_r)
+{
+	long charNum = 0;
+	long lineNum = 0;
+	long wordNum = 0;
+	wMap wordsDic;//单词map
+	npMap phraseDic;
+	wordInfo Mwords[MOSTNUM];
+	phraselink Mphrases[MOSTNUM];
+	int wordlen = word.length() - 1;
+	int pfixlen = 0;
+	string postfix, phraseKey;
+	wMap::iterator tempit;
+	for (int i = wordlen;; i--)
+	{
+		if (word[i]<'0' || word[i]>'9')
+		{
+			pfixlen = wordlen - i;
+			//获得数字后缀长度
+			break;
+		}
+	}
+	postfix = word.substr(wordlen - pfixlen + 1);
+	word = word.substr(0, wordlen - pfixlen + 1);//从小写的word得到wordKey
+	wordsDic[word].appearNum++;
+
+	if (wordsDic[word].value.empty() || wordsDic[word].value>word_r)
+		wordsDic[word].value = word_r;//记录真实值
+
+	return wordsDic;
+}
+npMap addWord2(string &word, string &word_pre, string &word_r, string &word_pre_r)
 {
 	long charNum = 0;
 	long lineNum = 0;
@@ -112,131 +143,5 @@ void addWord(string &word, string &word_pre, string &word_r, string &word_pre_r)
 		else if (phraseDic[phraseKey].Aword > word_pre_r)
 			phraseDic[phraseKey].Aword = word_pre_r;
 	}
-
+	return phraseDic;
 }
-
-bool sortWords()
-{
-	long charNum = 0;
-	long lineNum = 0;
-	long wordNum = 0;
-	wMap wordsDic;//单词map
-	npMap phraseDic;
-	wordInfo Mwords[MOSTNUM];
-	phraselink Mphrases[MOSTNUM];
-	wMap::iterator temp = wordsDic.begin();
-	unsigned int sortNum = MOSTNUM;
-	if (wordsDic.size() < sortNum)
-		sortNum = wordsDic.size();
-	for (unsigned int i = 0; i < sortNum; i++)
-	{
-		temp = wordsDic.begin();
-		for (wMap::iterator it = wordsDic.begin(); it != wordsDic.end(); it++)
-		{
-			if ((it->second.appearNum > temp->second.appearNum) || (it->second.appearNum == temp->second.appearNum && it->first < temp->first))//这里应该比较key还是真值的大小
-			{
-				temp = it;
-			}
-		}
-		Mwords[i] = temp->second;
-		wordsDic.erase(temp);
-	}
-	return true;
-}
-bool sortPhrase()
-{
-	long charNum = 0;
-	long lineNum = 0;
-	long wordNum = 0;
-	wMap wordsDic;//单词map
-	npMap phraseDic;
-	wordInfo Mwords[MOSTNUM];
-	phraselink Mphrases[MOSTNUM];
-	npMap::iterator temp = phraseDic.begin();
-	unsigned int sortNum = MOSTNUM;
-	if (phraseDic.size() < sortNum)
-		sortNum = phraseDic.size();
-
-	for (unsigned int i = 0; i < sortNum; i++)
-	{
-		temp = phraseDic.begin();
-		for (auto it = phraseDic.begin(); it != phraseDic.end(); it++)
-		{
-			if (it->second.appearNum > temp->second.appearNum || (it->second.appearNum == temp->second.appearNum&&it->first < temp->first))
-				temp = it;
-		}
-		Mphrases[i] = temp->second;
-		phraseDic.erase(temp);
-	}
-	return true;
-}
-bool isWord(string word)
-{
-	for (int i = 0; i < 4; i++)
-	{
-		if (word[i]<'a' || word[i]>'z')
-			return false;
-	}
-	return true;
-}
-
-wordInfo* sortMwords(wordInfo* Mwords)
-{
-	long charNum = 0;
-	long lineNum = 0;
-	long wordNum = 0;
-	wMap wordsDic;//单词map
-	npMap phraseDic;
-	phraselink Mphrases[MOSTNUM];
-	wordInfo temp = Mwords[0];
-	for (int i = 0; i < MOSTNUM; i++)
-	{
-		temp = Mwords[i];
-		if (Mwords[i].appearNum == 0)break;
-		for (int j = i + 1; j < MOSTNUM; j++)
-		{
-			if (Mwords[j].appearNum == 0)break;
-			if (Mwords[j].value < temp.value)
-			{
-				temp = Mwords[j];
-				Mwords[j] = Mwords[i];
-				Mwords[i] = temp;
-			}
-		}
-	}
-	return Mwords;
-}
-phraselink* sortMphrases(phraselink* Mphrases)
-{
-	long charNum = 0;
-	long lineNum = 0;
-	long wordNum = 0;
-	wMap wordsDic;//单词map
-	npMap phraseDic;
-	wordInfo Mwords[MOSTNUM];
-	phraselink temp = Mphrases[0];
-	for (int i = 0; i < MOSTNUM; i++)
-	{
-		temp = Mphrases[i];
-		if (Mphrases[i].appearNum == 0)break;
-		for (int j = i + 1; j < MOSTNUM; j++)
-		{
-			if (Mphrases[j].appearNum == 0)break;
-			if (Mphrases[j].Aword < temp.Aword || (Mphrases[j].Aword == temp.Aword) && Mphrases[j].Bword < temp.Bword)
-			{
-				temp = Mphrases[j];
-				Mphrases[j] = Mphrases[i];
-				Mphrases[i] = temp;
-			}
-		}
-	}
-	return Mphrases;
-}
-string tolower(string & str)
-{
-	int len = str.length();
-	for (int i = 0; i < len; i++)
-		if (str[i] >= 'A'&&str[i] <= 'Z')
-			str[i] = str[i] + 32;
-	return str;
-}//相比较库函数改进有限
