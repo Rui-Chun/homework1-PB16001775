@@ -290,6 +290,16 @@ void operate(char * path)
 			}
 
 		}
+		if (isWord(word_B))
+		{
+			wordNum++;
+			addWord(word_B, word_A, word_Breal, word_Areal);
+			word_A = word_B;
+			word_Areal = word_Breal;
+		}
+		word_B.clear();
+		word_Breal.clear();
+
 		delete[]buf;
 		if (fp)
 		{
@@ -322,7 +332,7 @@ int main(int argc, char** argv)
 	sortPhrase();
 
 	//输出文件
-	ofstream fileout("result我的.txt");
+	ofstream fileout("result.txt");
 	fileout << "characters:" << charNum << endl;
 	fileout << "words:" << wordNum << endl;
 	fileout << "lines:" << lineNum << endl;
