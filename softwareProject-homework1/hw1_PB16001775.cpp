@@ -326,7 +326,7 @@ int main(int argc, char** argv)
 	sortPhrase();
 
 	//输出文件
-	ofstream fileout("result我的.txt");
+	ofstream fileout("result.txt");
 	fileout << "characters:" << charNum << endl;
 	fileout << "words:" << wordNum << endl;
 	fileout << "lines:" << lineNum << endl;
